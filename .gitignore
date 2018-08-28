@@ -1,0 +1,43 @@
+logs
+target
+/.idea
+/.idea_modules
+/.classpath
+/.project
+
+/.scalastyle
+
+/RUNNING_PID
+/logs/
+/project/project/
+/project/target
+/target/
+activator*
+
+# sbt specific
+.settings*
+*.class
+*.log
+.cache*
+.history
+.lib/
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+
+# Scala-IDE specific
+.scala_dependencies
+.worksheet
+/bin/
+
+# für newrelic
+axa-bodyguard-0.0.2-SNAPSHOT/
+
+# ensime
+.ensime
+.ensime_cache
+
+.bloop
