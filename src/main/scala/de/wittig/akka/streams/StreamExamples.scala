@@ -22,7 +22,7 @@ object StreamExamples extends App {
   import system.dispatcher
 
 //  firstExampleRunnableGraph
-  time(serial)
+  // time(serial)
   //time(serialAndParallel)
 //  time(simpleSource)
 //  time(flatteningAStream)
@@ -36,7 +36,7 @@ object StreamExamples extends App {
 //  time(writeBatchToDatabaseUnordered)
 //  time(viaFlow)
 //  time(viaFlowParalell)
-//  time(throttling)
+  time(throttling)
 //  time(idleOut)
 //  time(errorHandlingRestart)
 

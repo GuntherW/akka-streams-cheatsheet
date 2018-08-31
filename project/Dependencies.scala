@@ -1,7 +1,7 @@
 import sbt._
 
 object Dependencies {
-  val akkaVersion = "2.5.15"
+  val akkaVersion = "2.5.16"
   val scalaTestVersion = "3.0.5"
 
   lazy val akkaStream = "com.typesafe.akka" %% "akka-stream" % akkaVersion
