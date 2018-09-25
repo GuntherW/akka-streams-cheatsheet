@@ -8,7 +8,7 @@ object Dependencies {
   lazy val alpakka = "com.lightbend.akka" %% "akka-stream-alpakka-file" % "0.20"
 
   // Ammonite
-  lazy val ammonite = "com.lihaoyi" % "ammonite" % "1.1.2" % "test" cross CrossVersion.full
+  lazy val ammonite = "com.lihaoyi" % "ammonite" % "1.2.1" % "test" cross CrossVersion.full
 
   // Test
   lazy val scalaTest = "org.scalatest" %% "scalatest" % scalaTestVersion
