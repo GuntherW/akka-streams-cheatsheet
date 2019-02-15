@@ -36,8 +36,12 @@ object StreamExamples extends App {
 //  time(idleOut)
 //  time(errorHandlingRestart)
 //  time(combine())
-  time(mapSync())
-  time(mapAsync())
+//  time(mapSync())
+//  time(mapAsync())
+//  broadcast()
+//  balance()
+  partition()
+//  time(groupBy())
 
   system.terminate()
 
@@ -250,6 +254,107 @@ object StreamExamples extends App {
       .via(nameFlow)
       .runWith(Sink.foreach(println))
   }
+
+  def broadcast() = {
+
+    val langs: List[(String, Int)]             = List(("Scala", 5), ("Golang", 8), ("Haskell", 7), ("Erlang", 5))
+    val source: Source[(String, Int), NotUsed] = Source(langs)
+
+    val nameFlow = Flow[(String, Int)].map(_._1)
+    val rateFlow = Flow[(String, Int)].map(_._2)
+
+    val nameSink = Sink.foreach[String](p => println(s"Name - $p"))
+    val rateSink = Sink.foreach[Int](p => println(s"Rate - $p"))
+
+    val graph = RunnableGraph.fromGraph(GraphDSL.create() { implicit b =>
+      import GraphDSL.Implicits._
+
+      val broadcaster = b.add(Broadcast[(String, Int)](2))
+
+      source ~> broadcaster.in
+
+      broadcaster.out(0) ~> nameFlow ~> nameSink
+      broadcaster.out(1) ~> rateFlow ~> rateSink
+
+      ClosedShape
+    })
+    graph.run()
+  }
+
+  // With balance, the upstream element emitted to the first available down-stream.
+  def balance() = {
+    val source = Source(1 to 20)
+
+    val backPressureFlow = Flow[Int]
+      .throttle(1, 10 millis, 1, ThrottleMode.shaping)
+      .map(_ * 2)
+    val normalFlow = Flow[Int]
+//      .throttle(1, 1 millis, 10, ThrottleMode.shaping)
+      .map(_ * 2)
+
+    val backPressureSink = Sink.foreach[Int](p => println(s"Coming from back-pressured flow - $p"))
+    val normalSink       = Sink.foreach[Int](p => println(s"Coming from normal flow - $p"))
+
+    val graph = RunnableGraph.fromGraph(GraphDSL.create() { implicit b =>
+      import GraphDSL.Implicits._
+
+      val balancer = b.add(Balance[Int](2))
+
+      source ~> balancer
+
+      balancer.out(0) ~> backPressureFlow ~> backPressureSink
+      balancer.out(1) ~> normalFlow ~> normalSink
+
+      ClosedShape
+    })
+    graph.run()
+  }
+
+  def partition() = {
+    case class Arg(name: String)
+    case class Result(name: String, rating: Int)
+    val resp = List(
+      (Arg("scala"), Option(Result("scala", 4))),
+      (Arg("golang"), Option(Result("golang", 6))),
+      (Arg("java"), None),
+      (Arg("haskell"), Option(Result("haskell", 5))),
+      (Arg("erlang"), Option(Result("erlang", 5)))
+    )
+    val source = Source(resp)
+
+    val ratingFlow = Flow[(Arg, Option[Result])].map(_._2)
+    val argFlow    = Flow[(Arg, Option[Result])].map(_._1)
+
+    val ratingSink = Sink.foreach[Option[Result]](r => println(s"Rating found, name - ${r.get.name}, rating - ${r.get.rating}"))
+    val argSink    = Sink.foreach[Arg](r => println(s"Rating not found, arg - ${r.name}"))
+
+    val graph = RunnableGraph.fromGraph(GraphDSL.create() { implicit b =>
+      import GraphDSL.Implicits._
+
+      val partition = b.add(Partition[(Arg, Option[Result])](2, r => if (r._2.isDefined) 0 else 1))
+
+      source ~> partition.in
+
+      partition.out(0) ~> ratingFlow ~> ratingSink
+      partition.out(1) ~> argFlow ~> argSink
+
+      ClosedShape
+    })
+    graph.run()
+  }
+
+  def groupBy() = {
+    // source partition into sub streams based on modules 3 operator (_ % 3)
+    // max sub stream size is 4
+    // we handle sub streams asynchronously and merge them together at the end
+    Source(1 to 10)
+      .groupBy(4, _ % 3)
+      .map(_ * 2)
+      .async
+      .mergeSubstreams
+      .runWith(Sink.foreach(println))
+  }
+
   private def writeToDatabase[T](batch: Seq[T]): Future[Unit] = Future {
     println(s"Thread: ${Thread.currentThread().getName} - Writing batch of $batch to database")
   }
