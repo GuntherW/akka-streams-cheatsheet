@@ -21,7 +21,7 @@ object TcpServer {
   def main(args: Array[String]): Unit = {
 
     implicit val system = ActorSystem("daytime")
-    implicit val mat = ActorMaterializer()
+    implicit val mat    = ActorMaterializer()
 
     val host = "localhost"
     val port = 55555
@@ -36,9 +36,10 @@ object TcpServer {
     Source
       .single(Unit)
       .map { _ =>
-        val string =
-          DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now())
-        ByteString(string, StandardCharsets.US_ASCII)
+        ByteString(
+          DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()),
+          StandardCharsets.US_ASCII
+        )
       }
 
   val daytimeFlow: Flow[ByteString, ByteString, NotUsed] =

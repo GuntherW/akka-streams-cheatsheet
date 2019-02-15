@@ -1,16 +1,14 @@
 import sbt._
 
 object Dependencies {
-  val akkaVersion = "2.5.16"
+
+  val akkaVersion      = "2.5.21"
   val scalaTestVersion = "3.0.5"
 
-  lazy val akkaStream = "com.typesafe.akka" %% "akka-stream" % "2.5.17"
-  lazy val alpakka = "com.lightbend.akka" %% "akka-stream-alpakka-file" % "0.20"
+  lazy val akkaStream = "com.typesafe.akka"  %% "akka-stream"              % akkaVersion
+  lazy val alpakka    = "com.lightbend.akka" %% "akka-stream-alpakka-file" % "0.20"
 
-  // Ammonite
-  lazy val ammonite = "com.lihaoyi" % "ammonite" % "1.2.1" % "test" cross CrossVersion.full
+  lazy val ammonite = "com.lihaoyi" % "ammonite" % "1.6.3" % "test" cross CrossVersion.full
 
-  // Test
   lazy val scalaTest = "org.scalatest" %% "scalatest" % scalaTestVersion
-
 }
