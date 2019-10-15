@@ -175,7 +175,7 @@ object StreamExamples extends App {
 
   def idleOut =
     Source
-      .tick(0.millis, 15 seconds, ())
+      .tick(0.millis, 15.seconds, ())
       .idleTimeout(10.seconds)
       .runWith(Sink.ignore)
       .recover {
@@ -286,7 +286,7 @@ object StreamExamples extends App {
     val source = Source(1 to 20)
 
     val backPressureFlow = Flow[Int]
-      .throttle(1, 10 millis, 1, ThrottleMode.shaping)
+      .throttle(1, 10.millis, 1, ThrottleMode.shaping)
       .map(_ * 2)
     val normalFlow = Flow[Int]
 //      .throttle(1, 1 millis, 10, ThrottleMode.shaping)

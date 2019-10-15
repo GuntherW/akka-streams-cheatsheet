@@ -12,7 +12,7 @@ object TestRouter extends App {
 
   implicit val system       = ActorSystem("Akka-Streams-Patterns")
   implicit val materializer = ActorMaterializer()
-  implicit val timeout      = Timeout(10 seconds)
+  implicit val timeout      = Timeout(10.seconds)
   import system.dispatcher
 
   val numberOfWorkers = 8

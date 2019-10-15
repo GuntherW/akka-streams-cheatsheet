@@ -34,7 +34,7 @@ object TcpServer {
 
   val dayTimeSource: Source[ByteString, NotUsed] =
     Source
-      .single(Unit)
+      .single(())
       .map { _ =>
         ByteString(
           DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()),
